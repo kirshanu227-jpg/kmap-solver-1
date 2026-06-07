@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karnaugh Map Solver - Digital Electronics Tool</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Header Area -->
+        <header class="app-header">
+            <div class="logo-area">
+                <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                    <rect x="9" y="9" width="6" height="6"></rect>
+                    <line x1="9" y1="1" x2="9" y2="4"></line>
+                    <line x1="15" y1="1" x2="15" y2="4"></line>
+                    <line x1="9" y1="20" x2="9" y2="23"></line>
+                    <line x1="15" y1="20" x2="15" y2="23"></line>
+                    <line x1="20" y1="9" x2="23" y2="9"></line>
+                    <line x1="20" y1="15" x2="23" y2="15"></line>
+                    <line x1="1" y1="9" x2="4" y2="9"></line>
+                    <line x1="1" y1="15" x2="4" y2="15"></line>
+                </svg>
+                <div class="brand">
+                    <h1>K-Map Solver</h1>
+                    <span class="badge">Digital Electronics</span>
+                </div>
+            </div>
+            
+            <p class="subtitle">Simplify Boolean expressions using 2, 3, or 4 variable Karnaugh Maps with real-time visualization of group coverings.</p>
+
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="solver">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                    Interactive Solver
+                </button>
+                <button class="nav-tab" data-tab="learning">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Learning &amp; Reference
+                </button>
+            </nav>
+
+            <div class="header-actions">
+                <button id="btn-reset" class="btn btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                    Reset Map
+                </button>
+                <button id="btn-print" class="btn btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    Export Lab Report
+                </button>
+            </div>
+        </header>
+
+        <!-- Main View Area -->
+        <main class="app-main-content">
+            <!-- Solver Tab (Default) -->
+            <section id="tab-content-solver" class="tab-panel active">
+                <div class="dashboard-grid">
+                    
+                    <!-- LEFT COLUMN: Grid Config & K-Map Grid -->
+                    <div class="grid-card kmap-editor-card">
+                        <div class="card-header">
+                            <div class="card-title-group">
+                                <h2>Karnaugh Map Config &amp; Grid</h2>
+                                <p class="card-subtitle">Select variable count and click cells to toggle values (0 &rarr; 1 &rarr; X)</p>
+                            </div>
+                            <!-- Variables Selector -->
+                            <div class="variables-selector">
+                                <label for="select-vars" class="sr-only">Variables</label>
+                                <select id="select-vars" class="styled-select">
+                                    <option value="2">2 Variables (A, B)</option>
+                                    <option value="3">3 Variables (A, B, C)</option>
+                                    <option value="4" selected>4 Variables (A, B, C, D)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- K-Map Grid Wrapper -->
+                        <div class="kmap-container-outer">
+                            <div class="kmap-container" id="kmap-grid-container">
+                                <!-- Generated Dynamically by JS -->
+                            </div>
+                        </div>
+                        
+                        <!-- Examples Quick Fill -->
+                        <div class="quick-examples">
+                            <h3>Quick Load Examples:</h3>
+                            <div class="example-buttons">
+                                <button class="btn btn-pill" data-example="xor-3">3-Var XOR</button>
+                                <button class="btn btn-pill" data-example="majority-3">3-Var Majority</button>
+                                <button class="btn btn-pill" data-example="corners-4">4-Var Corners</button>
+                                <button class="btn btn-pill" data-example="mux-4">4-to-1 MUX</button>
+                                <button class="btn btn-pill" data-example="bcd-invalid">BCD Invalid States</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: Solver Expressions & Truth Table -->
+                    <div class="dashboard-sidebar">
+                        
+                        <!-- Boolean Simplification Output -->
+                        <div class="grid-card results-card">
+                            <h2>Boolean Simplification</h2>
+                            
+                            <!-- SOP Result -->
+                            <div class="expression-block">
+                                <div class="expression-header">
+                                    <h3>Sum of Products (SOP) Minimized</h3>
+                                    <button class="btn btn-icon-copy" id="btn-copy-sop" title="Copy SOP Expression">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                                <div class="expression-value-container">
+                                    <div class="expression-math" id="sop-expression">F = 0</div>
+                                </div>
+                                <div class="implicant-legend" id="sop-legend">
+                                    <!-- Legend mapping terms to K-Map group colors will go here -->
+                                </div>
+                            </div>
+
+                            <!-- POS Result -->
+                            <div class="expression-block">
+                                <div class="expression-header">
+                                    <h3>Product of Sums (POS) Minimized</h3>
+                                    <button class="btn btn-icon-copy" id="btn-copy-pos" title="Copy POS Expression">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                                <div class="expression-value-container">
+                                    <div class="expression-math" id="pos-expression">F = 0</div>
+                                </div>
+                                <div class="implicant-legend" id="pos-legend">
+                                    <!-- Legend for POS terms -->
+                                </div>
+                            </div>
+
+                            <!-- Grouping Explanation -->
+                            <div class="expression-block" style="margin-top: 1rem; padding: 1.25rem;">
+                                <div class="expression-header">
+                                    <h3>Step-by-Step Grouping Explanation</h3>
+                                </div>
+                                <div class="explanation-content" id="grouping-explanation" style="font-size: 0.85rem; color: var(--text-main); margin-top: 0.5rem; line-height: 1.5; text-align: left;">
+                                    <!-- Populated dynamically by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Truth Table Card -->
+                        <div class="grid-card truth-table-card">
+                            <h2>Truth Table Generator</h2>
+                            <p class="card-subtitle">Automatically updated table corresponding to current K-Map values</p>
+                            
+                            <div class="truth-table-wrapper">
+                                <table class="truth-table" id="truth-table-el">
+                                    <thead>
+                                        <tr id="truth-table-header">
+                                            <!-- Columns generated dynamically -->
+                                        </tr>
+                                    </thead>
+                                    <tbody id="truth-table-body">
+                                        <!-- Rows generated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning & Reference Tab -->
+            <section id="tab-content-learning" class="tab-panel">
+                <div class="learning-container">
+                    <div class="grid-card learning-card">
+                        <h2>Understanding Karnaugh Maps (K-Maps)</h2>
+                        <p class="learning-intro">
+                            A <strong>Karnaugh Map (K-Map)</strong> is a graphical tool used in digital electronics to simplify Boolean algebra expressions without using complex algebraic identities. Invented by Maurice Karnaugh in 1953, it arranges truth table outputs into a grid where cells are ordered in <strong>Gray Code</strong>, ensuring that adjacent cells differ by only one binary variable.
+                        </p>
+
+                        <div class="alert alert-info">
+                            <strong>Why is Gray Code adjacency crucial?</strong> Because cells that are adjacent and both contain a <code>1</code> differ by exactly one variable (e.g., $A'B'C$ and $A'BC$ differ only in variable $B$). Combining them simplifies the terms using the boolean identity $XY + XY' = X(Y+Y') = X$.
+                        </div>
+
+                        <hr class="section-divider">
+
+                        <h3>Grouping Rules for K-Maps</h3>
+                        <p>To simplify expressions, we group cell entries containing <code>1</code>s (for Sum of Products - SOP) or <code>0</code>s (for Product of Sums - POS). The grouping rules are:</p>
+                        <ul class="learning-list">
+                            <li><strong>Powers of Two:</strong> Group sizes must be powers of 2 (i.e., 1, 2, 4, 8, 16). No groups of size 3, 5, 6, etc.</li>
+                            <li><strong>Rectangular Shapes:</strong> Groups must be rectangular or square (1x1, 1x2, 2x1, 2x2, 1x4, 4x1, 2x4, 4x2, 4x4).</li>
+                            <li><strong>Edge Wrapping:</strong> The K-Map grid wraps around. The leftmost column is adjacent to the rightmost column, and the topmost row is adjacent to the bottommost row. The four corners are also adjacent to each other.</li>
+                            <li><strong>Don't Cares (X):</strong> Cells marked with <code>X</code> can be treated as either <code>0</code> or <code>1</code>. We use them as <code>1</code>s (in SOP) if they help form larger, more simplified groups. If they do not help make groups larger, they are left uncovered.</li>
+                            <li><strong>Maximizing Group Size:</strong> Always aim to make groups as large as possible. Larger groups mean fewer variables in the resulting product term.</li>
+                            <li><strong>Minimizing Number of Groups:</strong> Use the fewest number of groups possible that cover all target cells (all 1s in SOP, all 0s in POS). This minimizes the total number of terms in the final expression.</li>
+                        </ul>
+
+                        <hr class="section-divider">
+
+                        <h3>SOP vs. POS Simplification</h3>
+                        <div class="sop-pos-comparison">
+                            <div class="comparison-col">
+                                <div class="col-header sop-theme">Sum of Products (SOP)</div>
+                                <div class="col-body">
+                                    <ul>
+                                        <li><strong>Target cells:</strong> Group cells containing <code>1</code>. Don't cares (<code>X</code>) are included if beneficial.</li>
+                                        <li><strong>Literal convention:</strong> Variable is represented as-is if its value is <code>1</code> (e.g., $A$), and complemented if <code>0</code> (e.g., $A'$).</li>
+                                        <li><strong>Result:</strong> Product terms summed together (e.g., $AB + CD'$).</li>
+                                        <li><strong>Usage:</strong> Standard AND-OR gate implementations.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="comparison-col">
+                                <div class="col-header pos-theme">Product of Sums (POS)</div>
+                                <div class="col-body">
+                                    <ul>
+                                        <li><strong>Target cells:</strong> Group cells containing <code>0</code>. Don't cares (<code>X</code>) are included if beneficial.</li>
+                                        <li><strong>Literal convention:</strong> Variable is represented as-is if its value is <code>0</code> (e.g., $A$), and complemented if <code>1</code> (e.g., $A'$).</li>
+                                        <li><strong>Result:</strong> Sum terms multiplied together (e.g., $(A + B)(C' + D)$).</li>
+                                        <li><strong>Usage:</strong> Standard OR-AND gate implementations.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="section-divider">
+
+                        <h3>Step-by-Step Example: 4-Variable Corners</h3>
+                        <p>Let's consider the classic 4-Variable Corners function, where $F(A,B,C,D) = \sum(0, 2, 8, 10)$.</p>
+                        <ol class="learning-steps">
+                            <li>
+                                <strong>Grid Placement:</strong> The active cells are at row/col configurations:
+                                <ul>
+                                    <li>Cell 0: $AB = 00$, $CD = 00$</li>
+                                    <li>Cell 2: $AB = 00$, $CD = 10$</li>
+                                    <li>Cell 8: $AB = 10$, $CD = 00$</li>
+                                    <li>Cell 10: $AB = 10$, $CD = 10$</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Adjacent Wrapping:</strong>
+                                <ul>
+                                    <li>Row 00 and Row 10 wrap top-to-bottom (sharing $B = 0$).</li>
+                                    <li>Column 00 and Column 10 wrap left-to-right (sharing $D = 0$).</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Group Selection:</strong> The four corners are adjacent and form a single group of size 4.
+                            </li>
+                            <li>
+                                <strong>Term Elimination:</strong>
+                                <ul>
+                                    <li>For $A$ and $B$, $A$ changes from 0 to 1 (eliminated), $B$ remains 0 ($B'$).</li>
+                                    <li>For $C$ and $D$, $C$ changes from 0 to 1 (eliminated), $D$ remains 0 ($D'$).</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Result:</strong> The minimized SOP expression is $B'D'$.
+                            </li>
+                        </ol>
+                        <div class="learning-action">
+                            <button class="btn btn-primary" id="btn-load-corners-example">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                Load this Corners Example into Solver
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Diagnostic Notification (Self-Test results) -->
+        <div class="test-toast" id="test-toast-el">
+            <span class="indicator"></span>
+            <span class="text" id="test-toast-text">Running system diagnostics...</span>
+        </div>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 Digital Electronics Lab Assistant. Designed for engineering students.</p>
+        </footer>
+    </div>
+
+    <!-- Application script -->
+    <script src="app.js"></script>
+</body>
+</html>
